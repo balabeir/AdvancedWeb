@@ -40,18 +40,18 @@ staffs_schema = StaffSchema(many=True)
 def get():
     return jsonify({'ms': 'Hello Cloud DB1'})
 
-# Get single Staffs
-@app.route('/staff/<id>')
-def get_staff(id):
-    staff = Staffs.query.get(id)
-    return staff_schema.jsonify(staff)
-
 # Get All Staffs
 @app.route('/staffs', methods=['GET'])
 def get_staffs():
     all_staffs = Staffs.query.all()
     result = staffs_schema.dump(all_staffs)
     return jsonify(result)
+
+# # Get single Staff
+# @app.route('/staff/<id>', methods=['GET'])
+# def get_staff(id):
+#     staff = Staffs.query.get(id)
+#     return staff_schema.jsonify(staff)
 
 # Run Server
 if __name__ == "__main__":

@@ -47,11 +47,11 @@ def get_staffs():
     result = staffs_schema.dump(all_staffs)
     return jsonify(result)
 
-# # Get single Staff
-# @app.route('/staff/<id>', methods=['GET'])
-# def get_staff(id):
-#     staff = Staffs.query.get(id)
-#     return staff_schema.jsonify(staff)
+# Get single Staff
+@app.route('/staff/<id>', methods=['GET'])
+def get_staff(id):
+    staff = Staffs.query.get(id)
+    return staff_schema.jsonify(staff)
 
 # Run Server
 if __name__ == "__main__":

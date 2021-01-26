@@ -53,6 +53,47 @@ def get_staff(id):
     staff = Staffs.query.get(id)
     return staff_schema.jsonify(staff)
 
+#Create a Staff
+@app.route('/staff', methods=['POST'])
+def add_staff():
+    id = request.json['id']
+    name = request.json['name']
+    email = request.json['email']
+    phone = request.json['phone']
+
+    new_staff = Staffs(id, name, email, phone)
+
+    db.session.add(new_staff)
+    db.session.commit()
+
+    return staff_schema.jsonify(new_staff)
+
+#Update a Staff
+@app.route('/staff/<id>', methods=['PUT'])
+def update_staff(id):
+    staff = Staffs.query.get(id)
+    
+    name = request.json['name']
+    email = request.json['email']
+    phone = request.json['phone']
+
+    staff.name = name
+    staff.email = email
+    staff.phone = phone
+
+    db.session.commit()
+
+    return staff_schema.jsonify(staff)
+
+# Delete Staff
+@app.route('/staff/<id>', methods=['DELETE'])
+def delete_staff(id):
+    staff = Staffs.query.get(id)
+    db.session.delete(staff)
+    db.session.commit()
+    
+    return staff_schema.jsonify(staff)
+
 # Run Server
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=80)

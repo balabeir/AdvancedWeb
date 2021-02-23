@@ -22,14 +22,114 @@ def get():
 # Get All Staffs from staffs collection
 @app.route("/staffs", methods=["GET"])
 def get_staffs():
-    data = db.staffs.find()  # setlect * from staffs
+    # data = db.staffs.find()  # setlect * from staffs
+
+    pipeline = [
+        {
+            "$lookup": {
+                "from": "department",
+                "localField": "dep_id",
+                "foreignField": "dep_id",
+                "as": "join_dep_id",
+            }
+        },
+        {
+            "$unwind": {
+                "path": "$join_dep_id",
+                "preserveNullAndEmptyArrays": True,
+            }
+        },
+        {
+            "$lookup": {
+                "from": "location",
+                "localField": "join_dep_id.location_id",
+                "foreignField": "location_id",
+                "as": "join_location",
+            }
+        },
+        {
+            "$unwind": {
+                "path": "$join_location",
+                "preserveNullAndEmptyArrays": True,
+            }
+        },
+        {
+            "$project": {
+                "_id": 0,
+                "staff_id": 1,
+                "name": 1,
+                "email": 1,
+                "location": {
+                    "street": "$join_location.street",
+                    "postal_code": "$join_location.postal_code",
+                    "zone": "$join_location.zone",
+                    "dscr": "$join_location.dscr",
+                },
+            }
+        },
+    ]
+
+    data = db.staffs.aggregate(pipeline)
+
     return json_util.dumps(data)
 
 
 # Get single Staff
 @app.route("/staff/<staff_id>", methods=["GET"])
 def get_staff(staff_id):
-    data = db.staffs.find_one({"staff_id": staff_id})  # select <staff_id> from staffs
+    # data = db.staffs.find_one({"staff_id": staff_id})  # select <staff_id> from staffs
+    pipeline = [
+        {
+            "$lookup": {
+                "from": "department",
+                "localField": "dep_id",
+                "foreignField": "dep_id",
+                "as": "join_dep_id",
+            }
+        },
+        {
+            "$unwind": {
+                "path": "$join_dep_id",
+                "preserveNullAndEmptyArrays": True,
+            }
+        },
+        {
+            "$lookup": {
+                "from": "location",
+                "localField": "join_dep_id.location_id",
+                "foreignField": "location_id",
+                "as": "join_location",
+            }
+        },
+        {
+            "$unwind": {
+                "path": "$join_location",
+                "preserveNullAndEmptyArrays": True,
+            }
+        },
+        {
+            "$match": {
+                "staff_id": staff_id,
+            }
+        },
+        {
+            "$project": {
+                "_id": 0,
+                "staff_id": 1,
+                "name": 1,
+                "email": 1,
+                "location": {
+                    "street": "$join_location.street",
+                    "postal_code": "$join_location.postal_code",
+                    "zone": "$join_location.zone",
+                    "dscr": "$join_location.dscr",
+                },
+            }
+        },
+    ]
+
+    data = db.staffs.aggregate(pipeline)
+
     return json_util.dumps(data)
 
 
@@ -75,6 +175,12 @@ def delete_staff(staff_id):
     deleteResult = db.staffs.delete_one({"staff_id": staff_id}).raw_result
 
     return json_util.dumps({"delete complete": deleteResult})
+
+
+@app.route("/timeAtten", methods=["GET"])
+def get_time():
+    data = db.timeAttendance.find()
+    return json_util.dumps(data)
 
 
 if __name__ == "__main__":

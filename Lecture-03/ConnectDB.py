@@ -1,12 +1,15 @@
 import psycopg2
+
 try:
-    connection = psycopg2.connect(user="webadmin",
-                                  password="HAHebv30768",
-                                  host="10.100.2.159",
-                                  # host="node8563-advweb-07.app.ruk-com.cloud",
-                                  port="5432",
-                                  # port="11072",
-                                  database="cloudDB")
+    connection = psycopg2.connect(
+        user="webadmin",
+        password="HAHebv30768",
+        host="10.100.2.159",
+        # host="node8563-advweb-07.app.ruk-com.cloud",
+        port="5432",
+        # port="11072",
+        database="cloudDB",
+    )
 
     cursor = connection.cursor()
     # print PostgreSQL Connection properties
@@ -22,7 +25,7 @@ except (Exception, psycopg2.Error) as error:
 
 finally:
     # closing database connection.
-    if(connection):
+    if connection:
         cursor.close()
         connection.close()
         print("PostgreSQL connection is closed")
